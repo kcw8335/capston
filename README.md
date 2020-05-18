@@ -6,3 +6,7 @@
 
 - 장고 설치
   - pip install django
+- imag 설치
+  - pip install django-imagekit
+  - pip install pillow
+  - pip install qrcode
