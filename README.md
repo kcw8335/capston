@@ -1,6 +1,7 @@
 # capston_design_project
 1. python == 3.7.4
-2. django
+2. django == 3.0.4
+
 - 가상환경에서 작업
   - python -m venv myvenv
   - source myvenv/Scripts/activate
