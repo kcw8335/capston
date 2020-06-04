@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Capston_Design_Project</title>
+        <link rel="stylesheet" href="{% static '/css/login.css' %}">
+        <!-- favicon.ico 에러를 해결하기 위해 link를 걸어서 해결함 -->
+        <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    </head>
+    <body>
+        <h1>OF Team</h1>
+        <!-- 로그인 폼 -->
+        <form method="POST" action="{% url 'login' %}">
+            {% csrf_token %}
+            <fieldset>
+                <legend>OF_로그인</legend>
+                <br>
+                <li>
+                    <label for="ID">ID</label>
+                    <input
+                        id="ID"
+                        name="id"
+                        type="text"
+                        required="required"
+                        placeholder="아이디를 입력하세요~"
+                        value="{{id}}">
+                </li>
+                <br>
+                <li>
+                    <label for="PW">PW</label>
+                    <input name="pw" type="password" required="required" placeholder="비밀번호를 입력하세요~">
+                </li>
+                <br>
+                <input type="submit" value="로그인">
+                <input id="first" type="hidden" value="{{first}}">
+                <br>
+                {% if error %}
+                    <p style="color: red;">{{ error }}</p>
+                {% endif %}
+            </fieldset>
+        </form>
+        <br>
+        <!-- 회원가입 폼 -->
+        <form method="GET" action="{% url 'signup' %}">
+            <fieldset>
+                <legend>OF_회원가입</legend>
+                <p>아직 회원이 아니신가요? 회원가입하세요~!</p>
+                <input type="submit" value="회원가입">
+            </fieldset>
+        </form>
+        <p>admin ID = kcw</p>
+        <p>admin password = 1234</p>
+        
+        <script src="/static/js/login.js?ver=1"></script>
+    </body>
+</html>

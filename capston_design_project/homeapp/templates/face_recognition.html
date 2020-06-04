@@ -1,0 +1,31 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Capston_Design_Project</title>
+        <link rel="stylesheet" href="{% static 'css/face_recognition.css' %}">
+        <!-- favicon.ico 에러를 해결하기 위해 link를 걸어서 해결함 -->
+        <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+        <script src="/static/js/face_detection/camvas.js"></script>
+		<script src="/static/js/face_detection/pico.js"></script>
+		<script src="/static/js/face_detection/lploc.js"></script>
+        <script src="/static/js/face_recognition.js"></script>
+    </head>
+    <body>
+        <!-- 카메라를 실행시키기 위해서는 무조건 protocol을 https로 해야함 -->
+        <h1>OF Team</h1>
+        <p>face recognition</p>
+        <!-- 얼굴인식 카메라가 실행되는 태그 -->
+        <canvas width=450 height=480></canvas>
+        
+        <form method="POST" action="{% url 'qrcode_function' %}">
+            {% csrf_token %}<br>
+            <button id="faceimg" type="submit">얼굴인식</button>
+        </form>
+
+        <!-- 페이지가 실행되고 바로 얼굴인식이 실행되게끔 설정함 -->
+        <script> button_callback(); </script>
+    </body>
+</html>

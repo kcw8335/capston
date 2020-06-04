@@ -1,0 +1,173 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Capston_Design_Project</title>
+        <link rel="stylesheet" href="{% static '/css/signup.css' %}">
+        <!-- favicon.ico 에러를 해결하기 위해 link를 걸어서 해결함 -->
+        <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    </head>
+
+    <body>
+        <h1>OF_회원가입</h1>
+        <form method="POST" action="{% url 'signup' %}" enctype="multipart/form-data">
+            {% csrf_token %}
+            <fieldset>
+                <legend>회원정보</legend>
+                <br>
+                <li>
+                    <label for="ID">ID&nbsp;</label>
+                    <input
+                        id="ID"
+                        type="text"
+                        name="username"
+                        placeholder="ex) nickname"
+                        required="required"
+                        value="{{id}}"
+                        autofocus="autofocus">
+                    <button id="overlap" type="button">ID 중복확인</button>
+                    <!-- 아이디 중복확인 버튼을 눌렀을 때 사용가능한지 불가능 한지 알려주는 값 -->
+                    <input id="overlap_check" type="hidden" value="{{overlap_check}}">
+                    <!-- 아이디 중복확인을 하지 않고 form을 날렸을 때 회원가입이 불가능하다는 걸 알려주는 값 -->
+                    <input id="overlap_alert" name="overlap_alert" type="hidden" value="{{overlap_alert}}">
+                    <br>
+                </li>
+                <br>
+                <li>
+                    <label for="PW">PW&nbsp;</label>
+                    <input
+                        id="PW"
+                        type="password"
+                        name="password"
+                        placeholder="ex) v2HNm?F/]'66Pue,"
+                        required="required">
+                </li>
+                <br>
+                <li>
+                    <label for="PWC">PW 확인&nbsp;</label>
+                    <input
+                        id="PWC"
+                        type="password"
+                        name="passwordConfirm"
+                        placeholder="ex) v2HNm?F/]'66Pue,"
+                        required="required">
+                </li>
+                <br>
+            </fieldset>
+            <fieldset>
+                <legend>개인정보</legend>
+                <br>
+                <li>
+                    <label for="name">이름&nbsp;</label>
+                    <input
+                        id="name"
+                        name="name"
+                        type="text"
+                        placeholder="ex) 홍길동"
+                        required="required"
+                        style="width:100px;">
+                </li>
+                <br>
+                <li>
+                    <label for="email">email</label>
+                    <input
+                        id="email"
+                        name="email"
+                        type="email"
+                        placeholder="ex) email"
+                        required="required">
+                </li>
+                <br>
+                <li>
+                    <label for="registration">주민번호&nbsp;</label>
+
+                    <input
+                        id="registration"
+                        type="text"
+                        name="registration1"
+                        onkeypress="return numkeyCheck(event)"
+                        placeholder="ex) 900000"
+                        maxlength="6"
+                        required="required"
+                        style="width:100px;">
+                    -
+                    <input
+                        type="text"
+                        name="registration2"
+                        onkeypress="return numkeyCheck(event)"
+                        placeholder="ex) 1000000"
+                        maxlength="7"
+                        required="required"
+                        style="width:110px;">
+                </li>
+                <br>
+                <li>
+                    <label for="license">면허증번호&nbsp;</label>
+                    <input
+                        id="license"
+                        type="text"
+                        name="license1"
+                        onkeypress="return numkeyCheck(event)"
+                        placeholder="ex) 00"
+                        maxlength="2"
+                        required="required"
+                        style="width:40px;">
+                    -
+                    <input
+                        type="text"
+                        name="license2"
+                        onkeypress="return numkeyCheck(event)"
+                        placeholder="ex) 00"
+                        maxlength="2"
+                        required="required"
+                        style="width:40px;">
+                    -
+                    <input
+                        type="text"
+                        name="license3"
+                        onkeypress="return numkeyCheck(event)"
+                        placeholder="ex) 000000"
+                        maxlength="6"
+                        required="required"
+                        style="width:70px;">
+                    -
+                    <input
+                        type="text"
+                        name="license4"
+                        onkeypress="return numkeyCheck(event)"
+                        placeholder="ex) 00"
+                        maxlength="2"
+                        required="required"
+                        style="width:40px;">
+                </li>
+                <br>
+                <li>
+                    <label for="image">얼굴사진&nbsp;</label>
+                    <input id="image" type="file" name="image">
+                </li>
+                <br>
+            </fieldset>
+            <fieldset>
+                <legend>개인정보 이용 동의</legend>
+                <label><input type="checkbox" required="required">개인정보의 수집 및 이용에 관한 사항</label>
+            </fieldset>
+            <p>모든 항목은 필수 항목입니다.</p>
+            <input type="submit" value="회원가입신청">
+        </form>
+
+        <br>
+
+        <!-- 회원가입 페이지에서 로그인 페이지로 이동 -->
+        <!-- GET 방식으로 login 함수 호출 -->
+        <form method="GET" action="{% url 'login' %}">
+            <input type="submit" value="뒤로 가기">
+        </form>
+
+        <!-- 자바스크립트 연결 -->
+        <script src="/static/js/signup.js?ver=1"></script>
+    </body>
+
+</html>

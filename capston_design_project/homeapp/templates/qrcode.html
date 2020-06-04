@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capston_Design_Project</title>
+    <link rel="stylesheet" href="{% static 'css/qrcode.css' %}">
+    <!-- favicon.ico 에러를 해결하기 위해 link를 걸어서 해결함 -->
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+</head>
+<body>
+    <h1>OF Team</h1>
+    
+    <p>qrcode 사진이 나오는 화면입니다.</p>
+    <img src="{{qrcode_info.qrcode_image.url}}">
+    
+    <p>qrcode_id가 나오는 화면입니다.</p>
+    <p>{{qrcode_info.qrcode_id}}</p>
+
+    <div id="time"></div>
+    <br>
+    <form method="GET" action="{% url 'qrcode_function' %}">
+        <button id="delete" type="submit">qrcode 삭제</button>
+    </form>
+    
+    <!-- <script src="/static/js/qrcode.js?ver=1"></script> -->
+</body>
+</html>

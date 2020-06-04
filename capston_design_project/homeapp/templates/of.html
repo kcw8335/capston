@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Capston_Design_Project</title>
+        <link rel="stylesheet" href="{% static '/css/of.css' %}">
+        <!-- favicon.ico 에러를 해결하기 위해 link를 걸어서 해결함 -->
+        <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+    </head>
+
+    <body>
+        <h1>OF Team</h1>
+        {% if user.is_active %}
+            <p>{{ user.username }}님!! 환영합니다!!</p>
+            <!-- lock 버튼 -->
+            <form method="GET" action="{% url 'of_lock' %}">
+                <fieldset>
+                    <legend>Lock</legend>
+                    <input type="submit" value="lock">
+                    <br>
+                </fieldset>
+            </form>
+            <br>
+
+            <!-- unlock 버튼 -->
+            <form method="GET" action="{% url 'of_unlock' %}">
+                <fieldset>
+                    <legend>Unlock</legend>
+                    <input type="submit" value="unlock">
+                    <br>
+                </fieldset>
+            </form>
+
+            <!-- 상태 표시 부분 -->
+            {% if lock %}
+                <p style="color: red;">locking status</p>
+                <p><img src="{% static '/img/lock.jpg' %}" alt=""></p>
+            {% endif %}
+
+            {% if unlock %}
+                <p style="color: green;">locking status</p>
+                <p><img src="{% static '/img/unlock.jpg' %}" alt=""></p>
+            {% endif %}
+
+        {% endif %}
+
+        <script src="/static/js/of.js?ver=1"></script>
+    </body>
+</html>
