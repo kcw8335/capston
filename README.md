@@ -10,3 +10,4 @@
   - pip install django-imagekit
   - pip install pillow
   - pip install qrcode
+  - pip install reqeusts
