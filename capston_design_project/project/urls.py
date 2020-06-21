@@ -19,8 +19,6 @@ urlpatterns = [
 
     path('face_recognition/', homeapp.views.face_recognition, name="face_recognition"),
     path('qrcode_function/', homeapp.views.qrcode_function, name="qrcode_function"),
-
-    path('qrcode_GET/<username>', homeapp.views.qrcode_GET, name="qrcode_GET"),
 ]
 
 urlpatterns += static(settings.MEDIA_URL,document_root=settings.MEDIA_ROOT)

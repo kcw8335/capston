@@ -146,11 +146,28 @@ def overlap(request, username):
 def of(request):
     # 로그인하고 of함수를 실행키기전에 전처리과정 필요
     # 아두이노로 데이터 전송하고 데이터(잠금상태)를 받아와야함
+    URL = 'http://172.20.10.2:80' 
+    params = {'qrcode_id': 'status00000000000000'}
+    response = requests.get(URL, params=params)
+    r = response.text[63:69]
+    print("r 값 : ", r)
+    print(response.text)
+    # r은 lock  , unlock 2개 중 한개의 메시지를 가져옴
+    # 슬라이싱을 6개로 했으므로 lock 뒤에 공백 2개가 있음
+    if r == "lock  ":
+        lock = True
+        unlock = False
+    elif r == "unlock":
+        lock = False
+        unlock = True
     # 지금의 경우는 lock을 기본으로 데이터 전송함
-    return render(request, 'of.html', {'lock':True,'unlock':False})
+    return render(request, 'of.html', {'lock':lock,'unlock':unlock})
 
 def of_lock(request):
     # 아두이노로 데이터 전송 -> 아두이노 잠금장치 잠김
+    URL = 'http://172.20.10.2:80' 
+    params = {'qrcode_id': 'lock0000000000000000'}
+    response = requests.get(URL, params=params)
     # 아두이노의 상태를 확인한 후에 Locking status 사진 표시
     return render(request, 'of.html', {'lock':True,'unlock':False})
 
@@ -195,18 +212,10 @@ def qrcode_function(request):
         qrcode_info = Qrcode_info.objects.get(username = username)
         URL = 'http://172.20.10.2:80' 
         params = {'qrcode_id': qrcode_info.qrcode_id}
-        response = requests.get(URL, params=params)
+        requests.get(URL, params=params)
         return render(request, 'qrcode.html', {'qrcode_info':qrcode_info})
     else :
         username = request.user.username
         qrcode_info = Qrcode_info.objects.get(username = username)
         qrcode_info.delete()
         return redirect('of')
-
-# 아두이노에서 호출하는 함수
-def qrcode_GET(request, username):
-    try:
-        qrcode_info = Qrcode_info.objects.get(username = username)
-        return render(request, 'qrcode_GET.html', {'qrcode_id':qrcode_info.qrcode_id})
-    except ObjectDoesNotExist:
-        return render(request, 'qrcode_GET.html', {'qrcode_id':'00000000000000000000'})
