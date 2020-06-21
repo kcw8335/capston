@@ -12,30 +12,35 @@
 
     <body>
         <h1>OF Team</h1>
-        {% if user.is_active %}
-            <p>{{ user.username }}님!! 환영합니다!!</p>
+        <p>Welcome!!</p>
+        <p>Hello!! {{ user.username }}!!</p>
+        {% if user.is_active and availability == True %}
+            <input type="hidden" value="{{already_status}}" id="already_status">
             <!-- lock 버튼 -->
-            {% if unlock %}
-            <form method="GET" action="{% url 'of_lock' %}">
+            <form method="POST" action="{% url 'of_lock' %}">
+                {% csrf_token %}
                 <fieldset>
                     <legend>Lock</legend>
                     <input type="submit" value="lock">
+                    <input type="hidden" value="{{lock}}" name="lock">
+                    <input type="hidden" value="{{unlock}}" name="unlock">
                     <br>
                 </fieldset>
             </form>
             <br>
-            {% endif %}
 
             <!-- unlock 버튼 -->
-            {% if lock %}
-            <form method="GET" action="{% url 'of_unlock' %}">
+            <form method="POST" action="{% url 'qrcode_function' %}">
+                {% csrf_token %}
                 <fieldset>
                     <legend>Unlock</legend>
                     <input type="submit" value="unlock">
+                    <input type="hidden" value="{{lock}}" name="lock">
+                    <input type="hidden" value="{{unlock}}" name="unlock">
                     <br>
                 </fieldset>
             </form>
-            {% endif %}
+            
 
             <!-- 상태 표시 부분 -->
             {% if lock %}
@@ -48,8 +53,32 @@
                 <p><img src="{% static '/img/unlock.jpg' %}" alt=""></p>
             {% endif %}
 
+        {% elif availability == False %}
+            <fieldset>
+                <legend>Authority</legend>
+                <p style="color: red;">※ No access authority ※</p>
+            </fieldset>
+            <br>
+            <fieldset>
+                <legend>Invitation Message</legend>
+                <p>초대메시지 받기</p>
+            </fieldset>
         {% endif %}
+        {% if user.username == "superuser" %}
+            <fieldset>
+                <legend>Invitation Message</legend>
+                <p>초대메시지 보내기</p>
+            </fieldset>
+        {% endif %}
+
+        <br><br>
+        <!-- 회원가입 페이지에서 로그인 페이지로 이동 -->
+        <!-- GET 방식으로 login 함수 호출 -->
+        <form method="GET" action="{% url 'login' %}">
+            <input type="submit" value="Back to login page">
+        </form>
 
         <script src="/static/js/of.js?ver=1"></script>
     </body>
 </html>
+

@@ -15,9 +15,9 @@ urlpatterns = [
 
     path('of/', homeapp.views.of, name="of"),
     path('of/lock/', homeapp.views.of_lock, name="of_lock"),
-    path('of/unlock/', homeapp.views.of_unlock, name="of_unlock"),
+    # path('of/unlock/', homeapp.views.of_unlock, name="of_unlock"),
 
-    path('face_recognition/', homeapp.views.face_recognition, name="face_recognition"),
+    # path('face_recognition/', homeapp.views.face_recognition, name="face_recognition"),
     path('qrcode_function/', homeapp.views.qrcode_function, name="qrcode_function"),
 ]
 

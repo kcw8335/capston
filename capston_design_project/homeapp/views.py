@@ -44,7 +44,7 @@ def login(request):
             return redirect('of')
         # 로그인에 실패할 때
         else:
-            return render(request, 'login.html', {'error':'아이디와 비밀번호를 확인해주세요!','id':id})
+            return render(request, 'login.html', {'error':'Please check your ID and Password!','id':id})
     # GET방식으로 요청이 들어올 때
     else:
         return render(request, 'login.html')
@@ -75,32 +75,36 @@ def signup(request):
             # 면허증번호
             d = request.POST['license1'] + "-" + request.POST['license2'] + "-" + request.POST['license3'] + "-" + request.POST['license4']
             sub.driver_license = d
+            sub.availability = False
             
             # 얼굴사진
-            face_image = request.FILES['image']
-            face_image_file_name = name + "_얼굴사진.jpg"
-            # print(face_image_file_name)
-            # print(face_image) # 김창우.jpg
-            # print(type(face_image)) # <class 'django.core.files.uploadedfile.InMemoryUploadedFile'>
+            # face_image = request.FILES['image']
+            # face_image_file_name = name + "_얼굴사진.jpg"
             
-            fs = FileSystemStorage(location="media/images/")
-            filename = fs.save(face_image_file_name, face_image)
-            # print(face_image.name) # 김창우.jpg
-            # print(type(face_image.name)) # <class 'str'>
-            #print(filename) # 김창우.jpg
-            # print(type(filename)) # <class 'str'>
-            # uploaded_file_url = fs.url(filename)
-            # print(uploaded_file_url) # /media/%EA%B9%80%EC%B0%BD%EC%9A%B0.jpg
-            # print(type(uploaded_file_url)) # <class 'str'>
-            face_image_file_path = "images/" + filename
-            sub.face_image = face_image_file_path
+            # # print(face_image_file_name)
+            # # print(face_image) # 김창우.jpg
+            # # print(type(face_image)) # <class 'django.core.files.uploadedfile.InMemoryUploadedFile'>
+            
+            # fs = FileSystemStorage(location="media/images/")
+            # filename = fs.save(face_image_file_name, face_image)
+            
+            # # print(face_image.name) # 김창우.jpg
+            # # print(type(face_image.name)) # <class 'str'>
+            # #print(filename) # 김창우.jpg
+            # # print(type(filename)) # <class 'str'>
+            # # uploaded_file_url = fs.url(filename)
+            # # print(uploaded_file_url) # /media/%EA%B9%80%EC%B0%BD%EC%9A%B0.jpg
+            # # print(type(uploaded_file_url)) # <class 'str'>
+            
+            # face_image_file_path = "images/" + filename
+            # sub.face_image = face_image_file_path
             sub.save()
 
-            # 모바일에서 넘어온 이미지를 가공하여 저장
-            face_image_file_path = "C:/Users/kcw83/Desktop/capston_design_project/capston_design_project/media/images/" + filename
-            img = Image.open(face_image_file_path)
-            img = img.rotate(90)
-            img.save(face_image_file_path)
+            # # 모바일에서 넘어온 이미지를 가공하여 저장
+            # face_image_file_path = "C:/Users/kcw83/Desktop/capston_design_project/capston_design_project/media/images/" + filename
+            # img = Image.open(face_image_file_path)
+            # img = img.rotate(90)
+            # img.save(face_image_file_path)
 
             # 회원가입에 성공했다면 가입축하 페이지로 이동
             if user is not None:
@@ -142,47 +146,68 @@ def overlap(request, username):
         }
         return render(request, 'signup.html', context)
 
-
+IP_Address = "http://192.168.0.18"
 def of(request):
-    # 로그인하고 of함수를 실행키기전에 전처리과정 필요
+    username = request.user.username
+    pk = (User.objects.get(username = username)).pk
+    availability = User_subinfo.objects.get(pk = pk).availability
+    # 로그인하고 of함수를 실행키기전에 전처리과정
     # 아두이노로 데이터 전송하고 데이터(잠금상태)를 받아와야함
-    URL = 'http://172.20.10.2:80' 
-    params = {'qrcode_id': 'status00000000000000'}
-    response = requests.get(URL, params=params)
-    r = response.text[63:69]
-    print("r 값 : ", r)
-    print(response.text)
-    # r은 lock  , unlock 2개 중 한개의 메시지를 가져옴
-    # 슬라이싱을 6개로 했으므로 lock 뒤에 공백 2개가 있음
-    if r == "lock  ":
-        lock = True
-        unlock = False
-    elif r == "unlock":
-        lock = False
-        unlock = True
-    # 지금의 경우는 lock을 기본으로 데이터 전송함
-    return render(request, 'of.html', {'lock':lock,'unlock':unlock})
+    if availability == True:
+        URL = IP_Address
+        params = {'qrcode_id': 'status00000000000000'}
+        response = requests.get(URL, params=params)
+        r = response.text[63:69]
+        print("r 값 : ", r)
+        print(response.text)
+        # r은 lock  , unlock 2개 중 한개의 메시지를 가져옴
+        # 슬라이싱을 6개로 했으므로 lock 뒤에 공백 2개가 있음
+        if r == "lock  ":
+            lock = True
+            unlock = False
+        elif r == "unlock":
+            lock = False
+            unlock = True
+        # 지금의 경우는 lock을 기본으로 데이터 전송함
+        return render(request, 'of.html', {'lock':lock,'unlock':unlock,'availability':True})
+    else:
+        
+        return render(request, 'of.html', {'availability':False})
 
 def of_lock(request):
     # 아두이노로 데이터 전송 -> 아두이노 잠금장치 잠김
-    URL = 'http://172.20.10.2:80' 
-    params = {'qrcode_id': 'lock0000000000000000'}
-    response = requests.get(URL, params=params)
-    # 아두이노의 상태를 확인한 후에 Locking status 사진 표시
-    return render(request, 'of.html', {'lock':True,'unlock':False})
-
-def of_unlock(request):
-    return redirect('face_recognition')
-    # return render(request, 'of.html', {'lock':False,'unlock':True})
-
-def face_recognition(request):
-    if request.method == "POST":
-        return redirect('qrcode_function')
+    # POST 방식으로 request가 들어오고 잠금장치 상태가 열린상태라면 코드 실행
+    # print(request.POST["lock"])
+    # print(request.POST["unlock"])
+    if request.method == "POST" and request.POST["unlock"] == "True":
+        URL = IP_Address
+        params = {'qrcode_id': 'lock0000000000000000'}
+        response = requests.get(URL, params=params)
+        # 아두이노의 상태를 확인한 후에 Locking status 사진 표시
+        return render(request, 'of.html', {'lock':True,'unlock':False})
+    # POST 방식으로 request가 들어오고 잠금장치 상태가 잠긴상태라면 코드 실행
+    elif request.method == "POST" and request.POST["lock"] == "True":
+        return render(request, 'of.html', {'lock':True,'unlock':False,'already_status':"lock"})
     else:
-        return render(request, 'face_recognition.html')
+        # GET 방식으로 request가 들어오면 무조건 login.html로 돌아가게 설정
+        return render(request, 'login.html')
+
+# def of_unlock(request):
+#     if request.method == "POST":
+#         return redirect('qrcode_function')
+#     else:
+#         # GET 방식으로 request가 들어오면 무조건 login.html로 돌아가게 설정
+#         return render(request, 'login.html')
+
+# def face_recognition(request):
+#     if request.method == "POST":
+#         return redirect('qrcode_function')
+#     else:
+#         return render(request, 'face_recognition.html')
 
 def qrcode_function(request):
-    if request.method == "POST":
+    # POST 방식으로 request가 들어오고 잠긴 상태일 경우 코드 실행
+    if request.method == "POST" and request.POST["lock"] == "True":
         # 누가 qrcode를 생성했는 지 알기 위한 username
         username = request.user.username
         name = User.objects.get(username = username).first_name
@@ -210,10 +235,13 @@ def qrcode_function(request):
 
         # 데이터베이스에서 username에 속하는 qrcode 이미지를 불러옴
         qrcode_info = Qrcode_info.objects.get(username = username)
-        URL = 'http://172.20.10.2:80' 
+        URL = IP_Address
         params = {'qrcode_id': qrcode_info.qrcode_id}
         requests.get(URL, params=params)
         return render(request, 'qrcode.html', {'qrcode_info':qrcode_info})
+    # POST방식으로 request가 들어오고 열린 상태일 경우 코드 실행
+    elif request.method == "POST" and request.POST["unlock"] == "True":
+        return render(request, 'of.html', {'lock':False,'unlock':True,'already_status':"unlock"})
     else :
         username = request.user.username
         qrcode_info = Qrcode_info.objects.get(username = username)

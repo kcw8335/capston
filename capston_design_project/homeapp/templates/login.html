@@ -15,7 +15,7 @@
         <form method="POST" action="{% url 'login' %}">
             {% csrf_token %}
             <fieldset>
-                <legend>OF_로그인</legend>
+                <legend>OF_Login</legend>
                 <br>
                 <li>
                     <label for="ID">ID</label>
@@ -24,16 +24,16 @@
                         name="id"
                         type="text"
                         required="required"
-                        placeholder="아이디를 입력하세요~"
+                        placeholder="Input your ID!"
                         value="{{id}}">
                 </li>
                 <br>
                 <li>
                     <label for="PW">PW</label>
-                    <input name="pw" type="password" required="required" placeholder="비밀번호를 입력하세요~">
+                    <input name="pw" type="password" required="required" placeholder="Input your Password!">
                 </li>
                 <br>
-                <input type="submit" value="로그인">
+                <input type="submit" value="Login">
                 <input id="first" type="hidden" value="{{first}}">
                 <br>
                 {% if error %}
@@ -45,12 +45,12 @@
         <!-- 회원가입 폼 -->
         <form method="GET" action="{% url 'signup' %}">
             <fieldset>
-                <legend>OF_회원가입</legend>
-                <p>아직 회원이 아니신가요? 회원가입하세요~!</p>
-                <input type="submit" value="회원가입">
+                <legend>OF_SignUp</legend>
+                <p>If you are not member, join us!!</p>
+                <input type="submit" value="Sign Up">
             </fieldset>
         </form>
-        <p>admin ID = kcw</p>
+        <p>admin ID = superuser</p>
         <p>admin password = 1234</p>
         
         <script src="/static/js/login.js?ver=1"></script>

@@ -12,8 +12,11 @@ class User_subinfo(models.Model):
     resident_registration_number = models.CharField(max_length=30)
     # 면허증번호
     driver_license = models.CharField(max_length=50)
+    # 제어 가능 여부
+    availability = models.BooleanField(default=False)
+
     # 이미지
-    face_image = models.ImageField(upload_to='images/', null=False)
+    # face_image = models.ImageField(upload_to='images/', null=True)
 
     # admin 페이지에 usernameC가 보이도록 설정
     def __str__(self):
@@ -24,6 +27,13 @@ class User_subinfo(models.Model):
         if self.face_image:
             os.remove(os.path.join(settings.MEDIA_ROOT, self.face_image.path))
         super(User_subinfo, self).delete(*args, **kargs)
+
+class Invitation(models.Model):
+    # 초대메시지를 보내는 사람
+    send_user = models.CharField(max_length=30)
+    # 초대메시지를 받는 사람
+    request_user = models.CharField(max_length=30)
+
 
 # qrcode를 저장하기 위한 데이터베이스
 class Qrcode_info(models.Model):
@@ -42,3 +52,4 @@ class Qrcode_info(models.Model):
         if self.qrcode_image:
             os.remove(os.path.join(settings.MEDIA_ROOT, self.qrcode_image.path))
         super(Qrcode_info, self).delete(*args, **kargs)
+

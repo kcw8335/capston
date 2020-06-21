@@ -16,7 +16,7 @@
         <form method="POST" action="{% url 'signup' %}" enctype="multipart/form-data">
             {% csrf_token %}
             <fieldset>
-                <legend>회원정보</legend>
+                <legend>Member Information</legend>
                 <br>
                 <li>
                     <label for="ID">ID&nbsp;</label>
@@ -58,10 +58,10 @@
                 <br>
             </fieldset>
             <fieldset>
-                <legend>개인정보</legend>
+                <legend>Personal Information</legend>
                 <br>
                 <li>
-                    <label for="name">이름&nbsp;</label>
+                    <label for="name">Name&nbsp;</label>
                     <input
                         id="name"
                         name="name"
@@ -72,7 +72,7 @@
                 </li>
                 <br>
                 <li>
-                    <label for="email">email</label>
+                    <label for="email">Email</label>
                     <input
                         id="email"
                         name="email"
@@ -82,7 +82,7 @@
                 </li>
                 <br>
                 <li>
-                    <label for="registration">주민번호&nbsp;</label>
+                    <label for="registration">Registration Number&nbsp;</label>
 
                     <input
                         id="registration"
@@ -105,7 +105,7 @@
                 </li>
                 <br>
                 <li>
-                    <label for="license">면허증번호&nbsp;</label>
+                    <label for="license">Driver License Numbers&nbsp;</label>
                     <input
                         id="license"
                         type="text"
@@ -144,18 +144,18 @@
                         style="width:40px;">
                 </li>
                 <br>
-                <li>
+                <!-- <li>
                     <label for="image">얼굴사진&nbsp;</label>
                     <input id="image" type="file" name="image">
                 </li>
-                <br>
+                <br> -->
             </fieldset>
             <fieldset>
                 <legend>개인정보 이용 동의</legend>
                 <label><input type="checkbox" required="required">개인정보의 수집 및 이용에 관한 사항</label>
             </fieldset>
             <p>모든 항목은 필수 항목입니다.</p>
-            <input type="submit" value="회원가입신청">
+            <input type="submit" value="Sign up for OF Team">
         </form>
 
         <br>
@@ -163,7 +163,7 @@
         <!-- 회원가입 페이지에서 로그인 페이지로 이동 -->
         <!-- GET 방식으로 login 함수 호출 -->
         <form method="GET" action="{% url 'login' %}">
-            <input type="submit" value="뒤로 가기">
+            <input type="submit" value="Back to login page">
         </form>
 
         <!-- 자바스크립트 연결 -->

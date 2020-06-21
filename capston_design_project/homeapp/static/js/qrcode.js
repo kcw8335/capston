@@ -8,7 +8,7 @@ var x = setInterval(function () {
 
     document
         .getElementById("time")
-        .innerHTML = min + "분" + sec + "초 후에 QRcode가 삭제됩니다.";
+        .innerHTML = "Qrcode will be deleted after "+ min + " min " + sec + " sec";
     time--;
     if (time < 0) {
         clearInterval(x);
