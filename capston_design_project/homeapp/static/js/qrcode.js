@@ -18,6 +18,6 @@ var x = setInterval(function () {
         document
             .getElementById("delete")
             .click();
-        alert("QRcode가 삭제되었습니다. 다시 발급받아주세요.")
+        alert("QRcode is deleted!! QRcode issue again!!")
     }
 }, 1000);

@@ -1,3 +1,5 @@
+from django.contrib.auth.decorators import login_required
+# 로그인을 했을 때만 실행되는 함수를 정의하기 위해 import
 from django.shortcuts import render, redirect
 # 로그인 함수를 사용하기 위해 import
 from django.contrib import auth
@@ -11,6 +13,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from .models import User_subinfo
 # qrcode 데이터베이스를 사용하기 위해 import
 from .models import Qrcode_info
+# 초대 메시지를 주고 받기 위해 import
+from .models import Invitation
 
 # 회원가입에서 이미지를 업로드하기 위해 import
 from django.core.files.storage import FileSystemStorage
@@ -146,11 +150,16 @@ def overlap(request, username):
         }
         return render(request, 'signup.html', context)
 
-IP_Address = "http://192.168.0.18"
+# IP_Address = "http://192.168.0.18
+IP_Address = "http://172.20.10.2"
+
+@login_required
 def of(request):
     username = request.user.username
+    print("username : ", username)
     pk = (User.objects.get(username = username)).pk
     availability = User_subinfo.objects.get(pk = pk).availability
+    print(availability)
     # 로그인하고 of함수를 실행키기전에 전처리과정
     # 아두이노로 데이터 전송하고 데이터(잠금상태)를 받아와야함
     if availability == True:
@@ -168,26 +177,202 @@ def of(request):
         elif r == "unlock":
             lock = False
             unlock = True
-        # 지금의 경우는 lock을 기본으로 데이터 전송함
-        return render(request, 'of.html', {'lock':lock,'unlock':unlock,'availability':True})
+        # access account list를 만드는 코드
+        user_subinfo = User_subinfo.objects
+        return render(request, 'of.html', {'lock':lock,'unlock':unlock,'availability':True,'user_subinfo':user_subinfo})
     else:
-        
-        return render(request, 'of.html', {'availability':False})
+        try:
+            inv = Invitation.objects.get(request_user = username)
+            return render(request, 'of.html', {'availability':False, 'inv':inv})
+        except ObjectDoesNotExist:
+            return render(request, 'of.html', {'availability':False})
 
+@login_required
+def of_access_delete(request):
+    username = request.POST.get('delete_user')
+    if request.method == "POST" and username != "superuser":
+        pk = (User.objects.get(username = username)).pk
+        user = User_subinfo.objects.get(pk = pk)
+        user.availability = False
+        user.save()
+        URL = IP_Address
+        params = {'qrcode_id': 'status00000000000000'}
+        response = requests.get(URL, params=params)
+        r = response.text[63:69]
+        print("r 값 : ", r)
+        print(response.text)
+        # r은 lock  , unlock 2개 중 한개의 메시지를 가져옴
+        # 슬라이싱을 6개로 했으므로 lock 뒤에 공백 2개가 있음
+        if r == "lock  ":
+            lock = True
+            unlock = False
+        elif r == "unlock":
+            lock = False
+            unlock = True
+        # access account list를 만드는 코드
+        user_subinfo = User_subinfo.objects
+        return render(request, 'of.html', {'lock':lock,'unlock':unlock,'availability':True,'user_subinfo':user_subinfo})
+    elif request.method == "POST" and username == "superuser":
+        URL = IP_Address
+        params = {'qrcode_id': 'status00000000000000'}
+        response = requests.get(URL, params=params)
+        r = response.text[63:69]
+        print("r 값 : ", r)
+        print(response.text)
+        # r은 lock  , unlock 2개 중 한개의 메시지를 가져옴
+        # 슬라이싱을 6개로 했으므로 lock 뒤에 공백 2개가 있음
+        if r == "lock  ":
+            lock = True
+            unlock = False
+        elif r == "unlock":
+            lock = False
+            unlock = True
+        # access account list를 만드는 코드
+        user_subinfo = User_subinfo.objects
+        return render(request, 'of.html', {'lock':lock,'unlock':unlock,'availability':True,'user_subinfo':user_subinfo,'superuser_no':'superuser_no'})
+    else:
+        return render(request, 'login.html')
+
+@login_required
+def of_accept_reject(request):
+    username = request.user.username
+    print(request.POST.get('accept_ok'))
+    print(request.POST.get('reject_ok'))
+    if request.method == "POST" and request.POST.get('accept_ok'):
+        pk = (User.objects.get(username = username)).pk
+        user_subinfo = User_subinfo.objects.get(pk = pk)
+        user_subinfo.availability = True
+        user_subinfo.save()
+        # Invitation 삭제하기
+        inv = Invitation.objects.get(request_user = username)
+        inv.delete()
+        # 상태 확인하기
+        URL = IP_Address
+        params = {'qrcode_id': 'status00000000000000'}
+        response = requests.get(URL, params=params)
+        r = response.text[63:69]
+        print("r 값 : ", r)
+        print(response.text)
+        # r은 lock  , unlock 2개 중 한개의 메시지를 가져옴
+        # 슬라이싱을 6개로 했으므로 lock 뒤에 공백 2개가 있음
+        if r == "lock  ":
+            lock = True
+            unlock = False
+        elif r == "unlock":
+            lock = False
+            unlock = True
+        return render(request, 'of.html', {'lock':lock,'unlock':unlock,'availability':True})
+    elif request.method == "POST" and request.POST.get('reject_ok'):
+        # Invitation 삭제하기
+        inv = Invitation.objects.get(request_user = username)
+        inv.delete()
+        return render(request, 'of.html', {'availability':False})
+    else:
+        return render(request, 'login.html')
+
+@login_required
+def of_search(request):
+    search_name = request.POST['search_name']
+    if request.method == "POST":
+        try:
+            get_username = User.objects.get(username = search_name).username
+            # =============================================================================================
+            username = request.user.username
+            pk = (User.objects.get(username = username)).pk
+            availability = User_subinfo.objects.get(pk = pk).availability
+            URL = IP_Address
+            params = {'qrcode_id': 'status00000000000000'}
+            response = requests.get(URL, params=params)
+            r = response.text[63:69]
+            print("r 값 : ", r)
+            print(response.text)
+            # r은 lock  , unlock 2개 중 한개의 메시지를 가져옴
+            # 슬라이싱을 6개로 했으므로 lock 뒤에 공백 2개가 있음
+            if r == "lock  ":
+                lock = True
+                unlock = False
+            elif r == "unlock":
+                lock = False
+                unlock = True
+            user_subinfo = User_subinfo.objects
+            return render(request, 'of.html', {'lock':lock,'unlock':unlock,'availability':True, 'message':get_username, 'send_button':True,'user_subinfo':user_subinfo})
+        except ObjectDoesNotExist:
+            # ===============================================================================================
+            username = request.user.username
+            pk = (User.objects.get(username = username)).pk
+            availability = User_subinfo.objects.get(pk = pk).availability
+            URL = IP_Address
+            params = {'qrcode_id': 'status00000000000000'}
+            response = requests.get(URL, params=params)
+            r = response.text[63:69]
+            print("r 값 : ", r)
+            print(response.text)
+            # r은 lock  , unlock 2개 중 한개의 메시지를 가져옴
+            # 슬라이싱을 6개로 했으므로 lock 뒤에 공백 2개가 있음
+            if r == "lock  ":
+                lock = True
+                unlock = False
+            elif r == "unlock":
+                lock = False
+                unlock = True
+            message = search_name + " can not be found!!"
+            user_subinfo = User_subinfo.objects
+            return render(request, 'of.html', {'lock':lock,'unlock':unlock,'availability':True,'message':message,'user_subinfo':user_subinfo})
+    else:
+        return render(request, 'login.html')
+
+@login_required
+def of_send_message(request):
+    send_username = request.POST['send_username']
+    if request.method == "POST":
+        inv = Invitation()
+        inv.send_user = request.user.username
+        inv.request_user = send_username
+        inv.save()
+        username = request.user.username
+        pk = (User.objects.get(username = username)).pk
+        availability = User_subinfo.objects.get(pk = pk).availability
+        URL = IP_Address
+        params = {'qrcode_id': 'status00000000000000'}
+        response = requests.get(URL, params=params)
+        r = response.text[63:69]
+        print("r 값 : ", r)
+        print(response.text)
+        # r은 lock  , unlock 2개 중 한개의 메시지를 가져옴
+        # 슬라이싱을 6개로 했으므로 lock 뒤에 공백 2개가 있음
+        if r == "lock  ":
+            lock = True
+            unlock = False
+        elif r == "unlock":
+            lock = False
+            unlock = True
+        # access account list를 만드는 코드
+        user_subinfo = User_subinfo.objects
+        return render(request, 'of.html', {'lock':lock,'unlock':unlock,'availability':True, 'send_ok':'send_ok','user_subinfo':user_subinfo})
+    else:
+        return render(request, 'login.html')    
+
+@login_required
 def of_lock(request):
     # 아두이노로 데이터 전송 -> 아두이노 잠금장치 잠김
     # POST 방식으로 request가 들어오고 잠금장치 상태가 열린상태라면 코드 실행
     # print(request.POST["lock"])
     # print(request.POST["unlock"])
     if request.method == "POST" and request.POST["unlock"] == "True":
+        username = request.user.username
+        pk = (User.objects.get(username = username)).pk
+        availability = User_subinfo.objects.get(pk = pk).availability
         URL = IP_Address
         params = {'qrcode_id': 'lock0000000000000000'}
         response = requests.get(URL, params=params)
         # 아두이노의 상태를 확인한 후에 Locking status 사진 표시
-        return render(request, 'of.html', {'lock':True,'unlock':False})
+        return render(request, 'of.html', {'lock':True,'unlock':False,'availability':True})
     # POST 방식으로 request가 들어오고 잠금장치 상태가 잠긴상태라면 코드 실행
     elif request.method == "POST" and request.POST["lock"] == "True":
-        return render(request, 'of.html', {'lock':True,'unlock':False,'already_status':"lock"})
+        username = request.user.username
+        pk = (User.objects.get(username = username)).pk
+        availability = User_subinfo.objects.get(pk = pk).availability
+        return render(request, 'of.html', {'lock':True,'unlock':False,'already_status':"lock",'availability':True})
     else:
         # GET 방식으로 request가 들어오면 무조건 login.html로 돌아가게 설정
         return render(request, 'login.html')
@@ -205,6 +390,7 @@ def of_lock(request):
 #     else:
 #         return render(request, 'face_recognition.html')
 
+@login_required
 def qrcode_function(request):
     # POST 방식으로 request가 들어오고 잠긴 상태일 경우 코드 실행
     if request.method == "POST" and request.POST["lock"] == "True":
@@ -241,9 +427,10 @@ def qrcode_function(request):
         return render(request, 'qrcode.html', {'qrcode_info':qrcode_info})
     # POST방식으로 request가 들어오고 열린 상태일 경우 코드 실행
     elif request.method == "POST" and request.POST["unlock"] == "True":
-        return render(request, 'of.html', {'lock':False,'unlock':True,'already_status':"unlock"})
+        return render(request, 'of.html', {'lock':False,'unlock':True,'already_status':"unlock",'availability':True})
     else :
         username = request.user.username
+        print(username)
         qrcode_info = Qrcode_info.objects.get(username = username)
         qrcode_info.delete()
         return redirect('of')

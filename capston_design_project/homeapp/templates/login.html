@@ -44,6 +44,7 @@
         <br>
         <!-- 회원가입 폼 -->
         <form method="GET" action="{% url 'signup' %}">
+            {%csrf_token%}
             <fieldset>
                 <legend>OF_SignUp</legend>
                 <p>If you are not member, join us!!</p>

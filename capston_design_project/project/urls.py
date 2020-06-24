@@ -14,6 +14,10 @@ urlpatterns = [
     path('overlap/<username>', homeapp.views.overlap, name="overlap"),
 
     path('of/', homeapp.views.of, name="of"),
+    path('of/search/', homeapp.views.of_search, name="of_search"),
+    path('of/send/message/', homeapp.views.of_send_message, name="of_send_message"),
+    path('of/accept_reject/', homeapp.views.of_accept_reject, name="of_accept_reject"),
+    path('of/access_delete/', homeapp.views.of_access_delete, name="of_access_delete"),
     path('of/lock/', homeapp.views.of_lock, name="of_lock"),
     # path('of/unlock/', homeapp.views.of_unlock, name="of_unlock"),
 

@@ -16,11 +16,15 @@
         <p>Hello!! {{ user.username }}!!</p>
         {% if user.is_active and availability == True %}
             <input type="hidden" value="{{already_status}}" id="already_status">
+            <input type="hidden" value="{{send_ok}}" id="send_ok">
+            <input type="hidden" value="{{accept_ok}}" id="accept_ok">
+            <input type="hidden" value="{{superuser_no}}" id="superuser_no">
             <!-- lock 버튼 -->
             <form method="POST" action="{% url 'of_lock' %}">
                 {% csrf_token %}
                 <fieldset>
                     <legend>Lock</legend>
+                    <p>Click to lock the door!!</p>
                     <input type="submit" value="lock">
                     <input type="hidden" value="{{lock}}" name="lock">
                     <input type="hidden" value="{{unlock}}" name="unlock">
@@ -34,6 +38,7 @@
                 {% csrf_token %}
                 <fieldset>
                     <legend>Unlock</legend>
+                    <p>Click to unlock the door!!</p>
                     <input type="submit" value="unlock">
                     <input type="hidden" value="{{lock}}" name="lock">
                     <input type="hidden" value="{{unlock}}" name="unlock">
@@ -43,12 +48,10 @@
             
 
             <!-- 상태 표시 부분 -->
-            {% if lock %}
+            {% if lock == True %}
                 <p style="color: red;">locking status</p>
                 <p><img src="{% static '/img/lock.jpg' %}" alt=""></p>
-            {% endif %}
-
-            {% if unlock %}
+            {% elif unlock == True %}
                 <p style="color: green;">locking status</p>
                 <p><img src="{% static '/img/unlock.jpg' %}" alt=""></p>
             {% endif %}
@@ -61,13 +64,55 @@
             <br>
             <fieldset>
                 <legend>Invitation Message</legend>
-                <p>초대메시지 받기</p>
+                <p>request invitation message</p>
+                {% if inv %}
+                    <p>※ {{inv.send_user}} sent this message!! click to accept or reject!!</p>
+                    <form method="POST" action="{% url 'of_accept_reject' %}">
+                        {% csrf_token %}
+                        <input type="submit" value="accept" name="accept_ok">
+                    </form><br>
+                    <form method="POST" action="{% url 'of_accept_reject' %}">
+                        {% csrf_token %}
+                        <input type="submit" value="reject" name="reject_ok">
+                    </form>
+                {% else %}
+                    <p>No message!!</p>
+                {% endif %}    
             </fieldset>
         {% endif %}
-        {% if user.username == "superuser" %}
+
+        {% if user.username == "superuser"%}
             <fieldset>
                 <legend>Invitation Message</legend>
-                <p>초대메시지 보내기</p>
+                <p>Send invitation message!!</p>
+                <form method="POST" action="{% url 'of_search' %}">
+                    {% csrf_token %}
+                    <input type="text" name="search_name" placeholder="Input username to search!!">
+                    <input type="submit" value="Searching"><br>
+                    <p style="color: red;">{{ message }}</p>
+                </form>
+                {% if send_button %}
+                    <form method="POST" action="{% url 'of_send_message' %}">
+                        {% csrf_token %}
+                        <input type="hidden" value="{{message}}" name="send_username">
+                        <input type="submit" value="Send invitation message">
+                    </form>
+                {% endif %}
+
+            </fieldset><br>
+            <fieldset>
+                <legend>Access Account List</legend>
+                {% for user in user_subinfo.all %}
+                    {% if user.availability == True %}
+                        <br>
+                        <form method="POST" action="{% url 'of_access_delete' %}">
+                            {% csrf_token %}
+                            {{user.username}}
+                            <input type="hidden" value="{{user.username}}" name="delete_user">
+                            <input type="submit" value="Access Authority Delete">
+                        </form><br>
+                    {% endif %}
+                {% endfor %}
             </fieldset>
         {% endif %}
 

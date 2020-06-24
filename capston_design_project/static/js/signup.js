@@ -15,7 +15,7 @@ pw2.onchange = comparePw;
 function overlapF() {
     var h = location.protocol + "//" + location.host + "/overlap/";
     if (userId.value == "") {
-        alert("ID를 입력하세요.");
+        alert("Input your ID correctly!!");
         userId.focus();
     } else {
         window.open(
@@ -29,36 +29,38 @@ function overlapF() {
 
 // 아이디 중복 확인 버튼을 누르고 overlap_check.value를 받고 알려주는 기능
 if (overlap_check.value == "true") {
-    alert("사용 가능한 아이디 입니다.");
+    alert("Available to use this ID!!");
 } else if (overlap_check.value == "false") {
-    alert("사용이 불가능한 아이디 입니다.");
+    alert("Unavailable to use this ID!!");
 }
 
 // 아이디 중복을 확인하지 않고 form이 넘어가게 되는 경우에 알림창 표시
 if (overlap_alert.value == "false") {
-    alert("ID 중복 확인을 해주세요.");
+    alert("Check to use this ID!!");
 }
 
-
+// 4~15자리의 영문과 숫자를 사용하세요.
 function checkId() {
     if (userId.value.length < 4 || userId.value.length > 15) {
-        alert("4~15자리의 영문과 숫자를 사용하세요.");
+        alert("Use 4 to 15 digits of English and numbers!!");
         userId.value = "";
         userId.focus();
     }
 }
 
+// 비밀번호는 8자리 이상이어야 합니다.
 function checkPw() {
     if (pw1.value.length < 8) {
-        alert("비밀번호는 8자리 이상이어야 합니다.");
+        alert("Password must be at least 8 digits!!");
         pw1.value = "";
         pw1.focus();
     }
 }
 
+// 암호가 다릅니다. 다시 입력하세요.
 function comparePw() {
     if (pw1.value != pw2.value) {
-        alert("암호가 다릅니다. 다시 입력하세요.");
+        alert("Passwords are different. Please re-input!!");
         pw2.value = "";
         pw2.focus();
     }

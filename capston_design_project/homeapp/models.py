@@ -28,12 +28,15 @@ class User_subinfo(models.Model):
             os.remove(os.path.join(settings.MEDIA_ROOT, self.face_image.path))
         super(User_subinfo, self).delete(*args, **kargs)
 
+# 초대메시지를 저장하기 위한 데이터베이스
 class Invitation(models.Model):
     # 초대메시지를 보내는 사람
     send_user = models.CharField(max_length=30)
     # 초대메시지를 받는 사람
-    request_user = models.CharField(max_length=30)
+    request_user = models.CharField(max_length=30, primary_key=True)
 
+    def __str__(self):
+        return self.request_user
 
 # qrcode를 저장하기 위한 데이터베이스
 class Qrcode_info(models.Model):

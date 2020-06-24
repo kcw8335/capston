@@ -8,7 +8,7 @@ var x = setInterval(function () {
 
     document
         .getElementById("time")
-        .innerHTML = "Qrcode will be deleted after "+ min + "min" + sec + "sec";
+        .innerHTML = "Qrcode will be deleted after "+ min + " min " + sec + " sec";
     time--;
     if (time < 0) {
         clearInterval(x);
@@ -18,6 +18,6 @@ var x = setInterval(function () {
         document
             .getElementById("delete")
             .click();
-        alert("QRcode가 삭제되었습니다. 다시 발급받아주세요.")
+        alert("QRcode is deleted!! QRcode issue again!!")
     }
 }, 1000);
